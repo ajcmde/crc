@@ -1,9 +1,10 @@
-# crc 
+# CRC
 # tags 
 #ESP32, #CRC, #CRC-8, #CRC-16, #CRC-32, #CRC-64
 
 # description
 provides functions to create a crc table and calculate a crc (8, 16, 32 or 64bit)
+
 # notes
 tested on ESP32 w/ 16bit polynom
 
@@ -16,7 +17,7 @@ C
   2. calculate crc:  
   uint64_t CRC(CRChandle_t *CRChandle, uint8_t *buffer, size_t length)
 
-# dependencies
+# dependency
   https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/index.html
 
 # reference
