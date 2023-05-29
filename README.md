@@ -22,4 +22,5 @@ C
 
 # reference
   http://graphics.stanford.edu/~seander/bithacks.html#BitReverseTable
+  
   https://en.wikipedia.org/wiki/Cyclic_redundancy_check
