@@ -13,8 +13,15 @@ C
 
 # usage
   1. initialize crc by providig necessary details: 
-  CRChandle_t *CRCCreate(uint8_t crcbits, uint64_t polynom, uint64_t init, bool RefIn, bool RefOut, uint64_t XOrOut)
-  2. calculate crc:  
+  CRChandle_t *CRCCreate(uint8_t crcbits, uint64_t polynom, uint64_t init, bool RefIn, bool RefOut, uint64_t XOrOut)  
+    crcbits: Number of bits for CRC value. Supported values are 8, 16, 32, and 64.  
+    polynom: CRC polynom  
+    init: CRC initial value (usually 0 or -1)  
+    RefIn: reverse bit order of input stream (true/ false)  
+    RefOut: reverse CRC value (true/ false)  
+    XOrOut: Xor CRC value with XOrOut value  
+  > Function will fail, if number of crcbits are not supported or system does not provided enough memory for the CRC table (8 * crcbits bytes)
+  2. Calculate CRC:  
   uint64_t CRC(CRChandle_t *CRChandle, uint8_t *buffer, size_t length)
   
 # example
