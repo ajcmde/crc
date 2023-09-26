@@ -1,6 +1,6 @@
 # CRC
 # tags 
-#ESP32, #CRC, #CRC-8, #CRC-16, #CRC-32, #CRC-64
+#ESP32, #CRC, #CRC-8, #CRC-16, #CRC-32, #CRC-64, #SML
 
 # description
 provides functions to create a crc table and calculate a crc (8, 16, 32 or 64bit)
@@ -88,6 +88,8 @@ C
 # example 3
     #include "CRC.h"
     
+    ...
+            
     CRChandle_t *CRC_CCITT16;
     char *ccode;
     
