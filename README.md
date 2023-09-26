@@ -114,3 +114,5 @@ C
   http://graphics.stanford.edu/~seander/bithacks.html#BitReverseTable
   
   https://en.wikipedia.org/wiki/Cyclic_redundancy_check
+
+  https://ceng2.ktu.edu.tr/~cevhers/ders_materyal/bil311_bilgisayar_mimarisi/supplementary_docs/crc_algorithms.pdf
