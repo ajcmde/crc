@@ -86,7 +86,7 @@ C
     crc16 = CRC(&CRC_CCITT16, buf, len);    
 
 # example 3
-#include "CRC.h"
+    #include "CRC.h"
     
     CRChandle_t *CRC_CCITT16;
     char *ccode;
