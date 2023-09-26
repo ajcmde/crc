@@ -25,7 +25,7 @@ C
   uint64_t CRC(CRChandle_t *CRChandle, uint8_t *buffer, size_t length)
   3. Dump CRC as C code
   char *CRCdump(CRChandle_t *CRChandle);
-  > Function will return determine length of source code and alloc an string.
+  > Function will return an allocated string.
 
 # example 1
     #include "CRC.h"
