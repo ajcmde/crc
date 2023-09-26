@@ -13,7 +13,7 @@ static uint64_t CRCreverse(uint64_t number, size_t bits)
         uint64_t result;
 
         result = number;
-        s = bits * 8 - 1; // extra shift needed at end
+        s = sizeof(number) * 8 - 1;
         for (number >>= 1; number; number >>= 1)
         {
             result <<= 1;
@@ -21,7 +21,7 @@ static uint64_t CRCreverse(uint64_t number, size_t bits)
             s--;
         }
         result <<= s; // shift when v's highest bits are zero
-        result >>= 64 - bits; // align to CRC bits
+        result >>= sizeof(number) * 8 - bits; // align to CRC bits
         return(result);
 }
 
