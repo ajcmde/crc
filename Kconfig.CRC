@@ -1,0 +1,17 @@
+menu "Cyclic Redundancy Check (CRC)"
+    choice CRC_CRCMAXBITS
+        prompt "maximum supported bits of the CRC polynom"
+        default CRC_CRC64
+        help
+            Defines the maximum bits supported by the CRC functions. 
+
+        config CRC_CRC64
+            bool "CRC-64"
+        config CRC_CRC32
+            bool "CRC-32"
+        config CRC_CRC16
+            bool "CRC-16"
+        config CRC_CRC8
+            bool "CRC-8"
+    endchoice
+endmenu
