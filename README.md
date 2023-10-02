@@ -12,11 +12,11 @@ tested on ESP32 w/ 16bit polynom
 C
 
 # usage
-  1. initialize CRC by providig necessary details: 
-  CRChandle_t *CRCCreate(uint8_t CRCbits, CRC_t Polynom, CRC_t Init, bool RefIn, bool RefOut, CRC_t XOrOut)  
-    CRCbits: Number of bits for CRC value. Supported values are 8, 16, 32, and 64.  
+  1. initialize CRC by providig necessary details:  
+  CRChandle_t *CRCCreate(uint8_t CRCbits, CRC_t Polynom, CRC_t Init, bool RefIn, bool RefOut, CRC_t XOrOut)   
+    CRCbits: Number of bits for CRC value. Supported values are 1 to 64.  
     Polynom: CRC polynom  
-    Init: CRC initial value
+    Init: CRC initial value  
     RefIn: reflect bit order of input stream (true/ false)  
     RefOut: reflect CRC value (true/ false)  
     XOrOut: Xor CRC value  
@@ -55,8 +55,8 @@ C
 
     //    16bits 
     //    polynom is x^{16} + x^{12} + x^5 + 1
-    //    initial value: 0xffff
-    //    reverse input and output
+    //    CRC initial value: 0xffff
+    //    reflect input and output
     //    toggle all output bits
     static CRChandle_t CRC_CCITT16 = {
       .CRCbits = 16,
