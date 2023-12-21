@@ -26,8 +26,8 @@ C
     CRChandle: handle of CRC  
     Buffer: data  
     Length: length of data
-  3. Dump CRC as C code
-  char *CRCdump(CRChandle_t *CRChandle);
+  3. Dump CRC as C code:  
+    char *CRCdump(CRChandle_t *CRChandle);
   > Function will return an allocated string.
 
 # example 1
