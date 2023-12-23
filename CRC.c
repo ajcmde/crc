@@ -43,8 +43,7 @@ static CRC_t CRCReflect(CRC_t number, size_t bits)
 
         result = number;
         s = sizeof(number) * 8 - 1;
-        for (number >>= 1; number; number >>= 1)
-        {
+        for (number >>= 1; number; number >>= 1) {
             result <<= 1;
             result |= number & 1;
             s--;
@@ -62,11 +61,13 @@ CRChandle_t *CRCCreate(uint8_t CRCbits, CRC_t Polynom, CRC_t Init, bool RefIn, b
     CRC_t Polymsb;
     int i, j;
 
-    if(CRCbits == 0 || CRCbits > sizeof(CRC_t) * 8)
+    if(CRCbits == 0 || CRCbits > sizeof(CRC_t) * 8) {
         return(NULL);
+    }
     CRChandle = calloc(sizeof(CRChandle_t), 1);
-    if(!CRChandle)
+    if(!CRChandle) {
         return(NULL);
+    }
     CRChandle->CRCbits = CRCbits;
     CRChandle->Polymask = (((CRC_t)1) << CRCbits) - 1;
     Polymsb = (((CRC_t)1) << (CRCbits - 1));
@@ -79,21 +80,24 @@ CRChandle_t *CRCCreate(uint8_t CRCbits, CRC_t Polynom, CRC_t Init, bool RefIn, b
     // initialize table
     CRC = Polymsb;
     CRChandle->Polytable[0] = 0;
-    for(i = 1; i < 256; i <<= 1)
-    {
-        if(CRC & Polymsb)
+    for(i = 1; i < 256; i <<= 1) {
+        if(CRC & Polymsb) {
             CRC = (CRC << 1) ^ Polynom;
-        else
+        }
+        else {
             CRC <<= 1;
+        }    
         CRC &= CRChandle->Polymask;
-        for(j = 0; j < i; j++)
+        for(j = 0; j < i; j++) {
             CRChandle->Polytable[(CRChandle->RefIn) ? CRCReflect(i + j, 8) : (i + j)] = 
                 (CRC) ^ CRChandle->Polytable[(CRChandle->RefIn) ? CRCReflect(j, 8) : j];
+        }
     }    
-    if(CRChandle->RefIn)
-        for(i = 1; i < 256; i++)
+    if(CRChandle->RefIn) {
+        for(i = 1; i < 256; i++) {    
             CRChandle->Polytable[i] = CRCReflect(CRChandle->Polytable[i], CRCbits);
-
+        }
+    }
     return(CRChandle);
 }
 
@@ -103,28 +107,32 @@ CRC_t CRC(CRChandle_t *CRChandle, uint8_t *Buffer, size_t Length)
     CRC_t CRC;
     size_t i;
 
-    if(!CRChandle)
+    if(!CRChandle) {
         return(0);
-
+    }
     CRC = CRChandle->Init; 
 
-    if(CRChandle->RefIn)
-        for(i = 0; i < Length; i++) 
+    if(CRChandle->RefIn) {
+        for(i = 0; i < Length; i++) { 
             CRC = CRChandle->Polytable[(Buffer[i] ^ CRC) & 0xff] ^ (CRC >> 8);
-    else
-    {
+        }
+    }
+    else {
         int16_t CRCbits_8;
 
         CRCbits_8 = (CRChandle->CRCbits - 8);
-        if(CRCbits_8 < 0)
+        if(CRCbits_8 < 0) {    
             CRCbits_8 = 0;
-        for(i = 0; i < Length; i++) 
+        }
+        for(i = 0; i < Length; i++) {
             CRC = CRChandle->Polytable[((CRC >> CRCbits_8) & 0xff) ^ Buffer[i]] ^ (CRC << 8);
+        }
         CRC &= CRChandle->Polymask;
     }    
 
-    if(CRChandle->RefOut ^ CRChandle->RefIn)
+    if(CRChandle->RefOut ^ CRChandle->RefIn) {
         CRC = CRCReflect(CRC, CRChandle->CRCbits);
+    }
     CRC ^= CRChandle->XOrOut;
 
     return(CRC);
@@ -150,30 +158,32 @@ static int CRCvnfrintf(char **buffer, size_t *n, const char *fmt, ...)
     char *_buffer;
     size_t _n;
 
-    if(!buffer)
+    if(!buffer) {
         return(-1);
+    }
     _buffer = *buffer;
-    if(!_buffer)
-    {
+    if(!_buffer) {
         _n = 1;
         _buffer = temp; 
     }
-    else 
+    else { 
         _n = *n;
+    }
     va_list list;
     va_start(list, fmt);
     int result = vsnprintf(_buffer, _n, fmt, list);
     va_end(list);
 
-    if(result < 0)
+    if(result < 0) {
         return(0);
-    if(_buffer != temp)
-    {
+    }   
+    if(_buffer != temp) {
         *buffer += result;
         *n -= result;
     }
-    else 
+    else { 
         *n += result;
+    }
     return(result);
 }
 
@@ -185,14 +195,14 @@ char *CRCCreateCCode(CRChandle_t *CRChandle)
     char *Sep1, *Sep2, *Sep3;
     int ValuesRow;
 
-    if(!CRChandle)
+    if(!CRChandle) {
         return(NULL);
-        
+    }
+
     Buffer = NULL;
     Length = 1;
     
-    for(int Pass = 0; Pass < 2; Pass++)
-    { 
+    for(int Pass = 0; Pass < 2; Pass++) { 
         CRCvnfrintf(&Buffer, &Length, "CRChandle_t CRChandle_%llx = {\n", (uint64_t)CRChandle->Polynom);
         CRCvnfrintf(&Buffer, &Length, "  .CRCbits = %u,\n", CRChandle->CRCbits);
         CRCvnfrintf(&Buffer, &Length, "  .Polynom = 0x%llx,\n", (uint64_t)CRChandle->Polynom);
@@ -205,8 +215,7 @@ char *CRCCreateCCode(CRChandle_t *CRChandle)
 
         ValuesRow = CRC_CREATECODE_LINELENGTH / ((CRChandle->CRCbits >> 2) + 4); 
 
-        for(int i = 0; i < 256; i++)
-        {
+        for(int i = 0; i < 256; i++) {
             Sep1 = (i % ValuesRow  == 0) ? "   " : "";
             Sep2 = (i != 255) ? "," : "";
             Sep3 = (i % ValuesRow  == ValuesRow - 1 || i == 255) ? "\n" : "";
@@ -215,8 +224,9 @@ char *CRCCreateCCode(CRChandle_t *CRChandle)
         CRCvnfrintf(&Buffer, &Length, "  }");
         CRCvnfrintf(&Buffer, &Length, "};");
 
-        if(Pass == 0)
+        if(Pass == 0) {
             _Buffer = Buffer = malloc(Length);
+        }
     }
     return(_Buffer);
 }
