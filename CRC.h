@@ -45,12 +45,12 @@
 typedef CRC_TYPE CRC_t; // CRC data type
 
 typedef struct {
-    uint8_t CRCbits; // 1-sizeof(CRC_t)*8
-    CRC_t Polynom; // polynom
+    uint8_t CRCbits; // CRC polynom width
+    CRC_t Polynom; // CRC polynom
     CRC_t Init; // CRC initial value
-    CRC_t XOrOut; // XOr outpout value
+    CRC_t XOrOut; // apply xor mask to CRC
     bool RefIn; // reflected input
-    bool RefOut; // reflected CRC
+    bool RefOut; // reflect CRC (before Xor)
     CRC_t Polymask; // polynom mask 
     CRC_t Polytable[256];  // precalculate CRC table
 } CRChandle_t;
@@ -58,11 +58,11 @@ typedef struct {
 /**
  * @brief Calculate a CRC table for fast CRC processing.
  *
- * @param CRCbits CRC polynom width (8, 16, 32, 64)
+ * @param CRCbits CRC polynom width
  * @param Polynom CRC polynom
  * @param Init CRC initial value
- * @param RefIn reflected input
- * @param RefOut reflected CRC
+ * @param RefIn reflect input
+ * @param RefOut reflect CRC
  * @param XOrOut apply xor mask to CRC
  * 
  * @result Pointer to CRChandle_t. If memory allocation fails a NULL pointer will be returned 
@@ -81,7 +81,8 @@ extern CRChandle_t *CRCCreate(uint8_t CRCbits, CRC_t Polynom, CRC_t Init, bool R
 extern CRC_t CRC(CRChandle_t *CRChandle, uint8_t *Buffer, size_t Length);
 
 #ifndef CRC_CREATECODE_LINELENGTH                 
-#define CRC_CREATECODE_LINELENGTH 128      // max line length of the polytable C code
+// max line length of the polytable C code
+#define CRC_CREATECODE_LINELENGTH 128      
 #endif
 
 /**
