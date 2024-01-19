@@ -46,6 +46,7 @@ typedef CRC_TYPE CRC_t; // CRC data type
 
 typedef struct {
     uint8_t CRCbits; // CRC polynom width
+    uint8_t CRCpad; //  padding bits to next byte boundary [0-7]
     CRC_t Polynom; // CRC polynom
     CRC_t Init; // CRC initial value
     CRC_t XOrOut; // apply xor mask to CRC
@@ -54,6 +55,14 @@ typedef struct {
     CRC_t Polymask; // polynom mask 
     CRC_t Polytable[256];  // precalculate CRC table
 } CRChandle_t;
+
+/**
+ * @brief Destroys a CRC table which has been created by CRCCreate or CRCCreateFromName
+ *
+ * @param CRChandle handle to CRC table
+ * 
+ */
+extern void CRCDestroy(CRChandle_t *CRChandle);
 
 /**
  * @brief Calculate a CRC table for fast CRC processing.
@@ -70,6 +79,15 @@ typedef struct {
 extern CRChandle_t *CRCCreate(uint8_t CRCbits, CRC_t Polynom, CRC_t Init, bool RefIn, bool RefOut, CRC_t XOrOut);
 
 /**
+ * @brief Calculate a CRC table for fast CRC processing from a named CRC.
+ *
+ * @param CRCname CRC name
+ * 
+ * @result Pointer to CRChandle_t. If CRCname points to NULL, CRC is unknown or, memory allocation fails a NULL pointer will be returned 
+ */
+extern CRChandle_t *CRCCreateFromName(char *CRCName);
+
+/**
  * @brief Calculate CRC code of a block of bytes
  *
  * @param CRChandle handle to CRC table
@@ -80,13 +98,13 @@ extern CRChandle_t *CRCCreate(uint8_t CRCbits, CRC_t Polynom, CRC_t Init, bool R
  */
 extern CRC_t CRC(CRChandle_t *CRChandle, uint8_t *Buffer, size_t Length);
 
-#ifndef CRC_CREATECODE_LINELENGTH                 
+#ifndef CRC_CREATECODE_LINELENGTH
 // max line length of the polytable C code
-#define CRC_CREATECODE_LINELENGTH 128      
+#define CRC_CREATECODE_LINELENGTH 128
 #endif
 
 /**
- * @brief Create  string with C source code of the CRC table
+ * @brief Create C source code of the CRC table. 
  *
  * @param CRChandle handle to CRC table
  * 
