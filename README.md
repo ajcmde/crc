@@ -1,18 +1,18 @@
 # CRC
 # tags 
-#ESP32, #CRC, #CRC-8, #CRC-16, #CRC-32, #CRC-64, #SML, #CRC-12
+#ESP32, #CRC, #CRC-8, #CRC-16, #CRC-32, #CRC-64, #SML, #CRC-12, #CRC-7
 
 # description
 provides functions to calculate a crc (1-64bit)
 
 # notes
-tested on ESP32 w/ 16bit polynom
+tested on ESP32 w/ multiple polynoms from 7 bit to 64 bit
 
 # language
 C
 
 # usage
-  1. initialize CRC by providig necessary details:  
+  1a. initialize CRC by providig necessary details:  
   CRChandle_t *CRCCreate(uint8_t CRCbits, CRC_t Polynom, CRC_t Init, bool RefIn, bool RefOut, CRC_t XOrOut)   
     CRCbits: Number of bits for CRC value. Supported values are 1 to 64.  
     Polynom: CRC polynom  
@@ -21,12 +21,17 @@ C
     RefOut: reflect CRC value (true/ false)  
     XOrOut: Xor CRC value  
   > Function will fail, if number of crcbits are not supported or system does not provided enough memory to hold the CRChandle_t
+  
+  1b. initialize CRC by specifing a name (see source code for valid names ;-) ):  
+  CRChandle_t *CRCCreateFromName(char *CRCname)   
+    CRCname: name of CRC    
+  > Function will fail, if number of crcbits are not supported, name is not known or system does not provided enough memory to hold the CRChandle_t
   2. Calculate CRC:  
   CRC_t CRC(CRChandle_t *CRChandle, uint8_t *Buffer, size_t Length)  
     CRChandle: handle of CRC  
     Buffer: data  
     Length: length of data
-  3. Dump CRC as C code:  
+  3. Dump CRC as C code to initialize a static CRC handle while compiling:  
     char *CRCdump(CRChandle_t *CRChandle);
   > Function will return an allocated string.
 
@@ -60,6 +65,7 @@ C
     //    toggle all output bits
     static CRChandle_t CRC_CCITT16 = {
       .CRCbits = 16,
+      .CRCpad = 0,
       .Polynom = 0x1021,
       .Init = 0xffff,
       .XOrOut = 0xffff,
