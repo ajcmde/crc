@@ -259,7 +259,7 @@ CRChandle_t *CRCCreateFromName(char *CRCName)
     if(!CRCName) {
             return(NULL);
     }
-    for(crc = CRCs; crc; crc++) {
+    for(crc = CRCs; crc->Name; crc++) {
         if(!strcmp(CRCName, crc->Name)) {
             return(CRCCreate(crc->CRCbits, crc->Polynom, crc->Init, crc->RefIn, crc->RefOut, crc->XOrOut));
         }
