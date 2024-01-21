@@ -12,34 +12,40 @@ tested on ESP32 w/ multiple polynoms from 7 bit to 64 bit
 C
 
 # usage
+  To calculate a CRC you need to have an initialized CRC handle (`CRChandle_t`). The handle can be initialized statically (see example 2). How to create the code 
+  please refer to example 3. Static initialization will save the time of calculating the CRC table which may take at least 3900 calculations which may important to 
+  your application. To create a CRC handle from a polynom pass it along with the calculation options to the `CRCCreate`. If the CRC handle is not longer used, 
+  the handle can be freed by `DestroyCRC`, if the handle was not allocated statically.   
+  
   1. a. initialize CRC by providig necessary details:  
-  CRChandle_t *CRCCreate(uint8_t CRCbits, CRC_t Polynom, CRC_t Init, bool RefIn, bool RefOut, CRC_t XOrOut)   
-    CRCbits: Number of bits for CRC value. Supported values are 1 to 64.  
-    Polynom: CRC polynom  
-    Init: CRC initial value  
-    RefIn: reflect bit order of input stream (true/ false)  
-    RefOut: reflect CRC value (true/ false)  
-    XOrOut: Xor CRC value  
+  `CRChandle_t *CRCCreate(uint8_t CRCbits, CRC_t Polynom, CRC_t Init, bool RefIn, bool RefOut, CRC_t XOrOut)`   
+    `CRCbits`: Number of bits for CRC value. Supported values are 1 to 64.  
+    `Polynom`: CRC polynom  
+    `Init`: CRC initial value  
+    `RefIn`: reflect bit order of input stream (true/ false)  
+    `RefOut`: reflect CRC value (true/ false)  
+    `XOrOut`: Xor CRC value  
   > Function will fail, if number of crcbits are not supported or system does not provided enough memory to hold the CRChandle_t
   
   1. b. initialize CRC by specifing a name (see source code for valid names ;-) ):  
-  CRChandle_t *CRCCreateFromName(char *CRCname)   
-    CRCname: name of CRC    
+  `CRChandle_t *CRCCreateFromName(char *CRCname)`   
+    `CRCname`: name of CRC    
   > Function will fail, if number of crcbits are not supported, name is not known or system does not provided enough memory to hold the CRChandle_t
 
   2. Calculate CRC:  
-  CRC_t CRC(CRChandle_t *CRChandle, uint8_t *Buffer, size_t Length)  
-    CRChandle: handle of CRC  
-    Buffer: data  
-    Length: length of data
+  `CRC_t CRC(CRChandle_t *CRChandle, uint8_t *Buffer, size_t Length)`  
+    `CRChandle`: handle of CRC  
+    `Buffer`: data  
+    `Length`: length of data
   
   3. Dump CRC as C code to initialize a static CRC handle while compiling:  
-    char *CRCdump(CRChandle_t *CRChandle);
+    `char *CRCdump(CRChandle_t *CRChandle)`  
+    `CRChandle`: handle of CRC  
   > Function will return an allocated string.
 
   4. Destroy a non static CRC handle  
-    void CRCDestroy(CRChandle_t *CRChandle);  
-    CRChandle: handle of CRC
+    `void CRCDestroy(CRChandle_t *CRChandle)`  
+    `CRChandle`: handle of CRC
 
 # example 1
     #include "CRC.h"
@@ -57,9 +63,11 @@ C
     if(!CRC_CCITT16)
         CRC_CCITT16 = CRCCreate(16, 0x1021, 0xffff, true, true, 0xffff);
 
+    ...
+    
     CRC_t crc16;
     // calculate CRC
-    crc16 = CRC(CRC_CCITT16, buf, len);    
+    crc16 = CRC(CRC_CCITT16, buf, len);   
 
 # example 2
     #include "CRC.h"
