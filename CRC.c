@@ -309,8 +309,7 @@ CRC_t CRC(CRChandle_t *CRChandle, uint8_t *Buffer, size_t Length)
         }
     }
     else {
-        int16_t CRCbits_8;
-        CRCbits_8 = ((CRChandle->CRCbits - 1) >> 3) << 3;
+        int16_t CRCbits_8 = (CRChandle->CRCbits - 1) & (((CRC_t)-1) ^ 7); // CRC bits aligned to next byte border (12 -> 8, 32 -> 24)
         for(i = 0; i < Length; i++) {
             CRC = CRChandle->Polytable[((CRC >> CRCbits_8) & 0xff) ^ Buffer[i]] ^ (CRC << 8);
         }
