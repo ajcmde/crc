@@ -1,15 +1,15 @@
 # CRC
 # tags 
-#ESP32, #CRC, #CRC-8, #CRC-16, #CRC-32, #CRC-64, #SML, #CRC-12, #CRC-7
+#ESP32, #CRC, #CRC-8, #CRC-16, #CRC-32, #CRC-64, #SML, #CRC-12, #CRC-7, #c, #PYTHON
 
 # description
 provides functions to calculate a crc (1-64bit)
 
-# notes
-tested on ESP32 w/ multiple polynoms from 7 bit to 64 bit
+# note
+Description for python implementation needs to be added
 
 # language
-C
+C, Python
 
 # usage
   To calculate a CRC you need to have an initialized CRC handle (`CRChandle_t`). The handle can be initialized statically (see example 2). How to create the code 
