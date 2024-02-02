@@ -60,19 +60,12 @@ static CRC_t CRCReflect(CRC_t number, uint8_t bits, uint8_t bitspad)
 
     CRC_t result = 0;
     int i;
-    uint8_t bitslen = (bits + bitspad) / 8;
+    uint8_t bytes = (bits + bitspad) / 8;
+    for(i = 0; i < bytes; i++) {
+        result = (result << 8) | ReflectTable[number & 0xff];
+        number >>= 8;
+    }
 
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__ || defined(CONFIG_CRC_CRC8)
-    for(i = 0; i < bitslen; i++) {
-        ((uint8_t *)&result)[i] = ReflectTable[((uint8_t *)&number)[bitslen - 1 - i]];
-    }
-#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-    for(i = sizeof(CRC_t) - bitslen; i < sizeof(CRC_t); i++) {
-        ((uint8_t *)&result)[i] = ReflectTable[((uint8_t *)&number)[bitslen - 1 - i]];
-    }
-#else
-#error "byte order not supported"
-#endif
     result >>= bitspad; // align to CRC bits
     return(result);
 }
