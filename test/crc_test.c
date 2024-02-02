@@ -29,6 +29,7 @@ void _CRCTest(void)
     uint8_t _CRCpattern5[] = {0xff};
     uint8_t _CRCpattern6[] = {0xff, 0xff};
     uint8_t _CRCpattern7[] = {0x43, 0x52, 0x43, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39};
+    uint8_t _CRCpattern8[] = {0x33, 0x22, 0x55, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF };
     _CRCtestpattern_t CRCtestpattern0 = {"0xf", _CRCpattern0, sizeof(_CRCpattern0)};
     _CRCtestpattern_t CRCtestpattern1 = {"\"CRC\"", _CRCpattern1, sizeof(_CRCpattern1)};
     _CRCtestpattern_t CRCtestpattern2 = {"singlebits(8)", _CRCpattern2, sizeof(_CRCpattern2)};
@@ -37,6 +38,7 @@ void _CRCTest(void)
     _CRCtestpattern_t CRCtestpattern5 = {"0xff", _CRCpattern5, sizeof(_CRCpattern5)};
     _CRCtestpattern_t CRCtestpattern6 = {"0xffff", _CRCpattern6, sizeof(_CRCpattern6)};
     _CRCtestpattern_t CRCtestpattern7 = {"CRC0123456789", _CRCpattern7, sizeof(_CRCpattern7)};
+    _CRCtestpattern_t CRCtestpattern8 = {"AUTOSAR-05", _CRCpattern8, sizeof(_CRCpattern8)};
     const _CRCtest_t CRCtests[] =
     {
         {"CRC-8/I-432-1", &CRCtestpattern1, 0x86},
@@ -53,18 +55,25 @@ void _CRCTest(void)
         {"CRC-7/UMTS", &CRCtestpattern0, 0x22},
         {"CRC-7/UMTS", &CRCtestpattern5, 0x59},
         {"CRC-7/UMTS", &CRCtestpattern6, 0x24},
+        {"CRC-8/SAE-J1850", &CRCtestpattern8, 0xcb}, 
+        {"CRC-8/AUTOSAR", &CRCtestpattern8, 0x11},
 #if defined(CONFIG_CRC_CRC16) || defined(CONFIG_CRC_CRC32) || defined(CONFIG_CRC_CRC64)
         {"CRC-10/ATM", &CRCtestpattern2, 0x15d},
         {"CRC-16/CDMA2000", &CRCtestpattern2, 0xa3ee},
+        {"CRC-16/IBM-3740", &CRCtestpattern8, 0xf53f},        
+        {"CRC-16/ARC", &CRCtestpattern8, 0xae98},
 #endif
 #if defined(CONFIG_CRC_CRC32) || defined(CONFIG_CRC_CRC64)
         {"CRC-24/OPENPGP", &CRCtestpattern7, 0x5639ee},
         {"CRC-32/ISCSI", &CRCtestpattern7, 0xfa1d936a},
+        {"CRC-32/ISO-HDLC", &CRCtestpattern8, 0xb0ae863d}, 
+        {"CRC-32/AUTOSAR", &CRCtestpattern8, 0xa65a343d},
 #endif
 #if defined(CONFIG_CRC_CRC64)
         {"CRC-40/GSM", &CRCtestpattern7, 0x19eb2415ca},
         {"CRC-64/WE", &CRCtestpattern7, 0xb072fe3926575027},
         {"CRC-64/XZ", &CRCtestpattern7, 0x319fa647bf14a7c2},
+        {"CRC-64/XZ", &CRCtestpattern8, 0x701ECEB219A8E5D5},
 #endif
         { /* end of table */ }
     };
@@ -85,16 +94,11 @@ void _CRCTest(void)
             ESP_LOGI(_CRCtest_TAG, "%s[%s] passed", CRCtest->Name, CRCtest->TestPattern->Name);
         else
             ESP_LOGE(_CRCtest_TAG, "%s[%s] failed: expected 0x%llx, calculated 0x%llx", CRCtest->Name, CRCtest->TestPattern->Name, CRCtest->crc, crc);
-#if 0
-        if(!strcmp("CRC-64/WE", CRCtest->Name)) {
-            char *code = CRCCreateCCode(CRChandle);
-            ESP_LOGE("code", "%s", code);
-            free(code);
-        }
-#endif
+
         CRCDestroy(CRChandle);        
     }
 
 }
+
 
 #endif
