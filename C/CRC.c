@@ -373,6 +373,7 @@ char *CRCCreateCCode(CRChandle_t *CRChandle)
     size_t Length;
     char *_Buffer, *Buffer;
     char *Sep1, *Sep2, *Sep3;
+    int ValuesDigits;
     int ValuesRow;
 
     if(!CRChandle) {
@@ -394,13 +395,14 @@ char *CRCCreateCCode(CRChandle_t *CRChandle)
         CRCvnfrintf(&Buffer, &Length, "  .Polymask = 0x%llx,\n", (uint64_t)CRChandle->Polymask);
         CRCvnfrintf(&Buffer, &Length, "  .Polytable = {\n");
 
-        ValuesRow = CRC_CREATECODE_LINELENGTH / ((CRChandle->CRCbits >> 2) + 4);
-
+        ValuesDigits = (CRChandle->CRCbits + ((CRChandle->RefIn) ? 3 : CRChandle->CRCpad)) >> 2;
+        ValuesRow = CRC_CREATECODE_LINELENGTH / (ValuesDigits + 4);
         for(int i = 0; i < 256; i++) {
             Sep1 = (i % ValuesRow  == 0) ? "   " : "";
             Sep2 = (i != 255) ? "," : "";
             Sep3 = (i % ValuesRow  == ValuesRow - 1 || i == 255) ? "\n" : "";
-            CRCvnfrintf(&Buffer, &Length,"%s 0x%ll0*x%s%s", Sep1, CRChandle->CRCbits >> 2, (uint64_t)CRChandle->Polytable[i], Sep2, Sep3);
+
+            CRCvnfrintf(&Buffer, &Length,"%s 0x%ll0*x%s%s", Sep1, ValuesDigits, (uint64_t)CRChandle->Polytable[i], Sep2, Sep3);
         }           
         CRCvnfrintf(&Buffer, &Length, "  }");
         CRCvnfrintf(&Buffer, &Length, "};");
