@@ -25,7 +25,36 @@
 # For more information, please refer to <https://unlicense.org>
 #
 
-         
+'''
+PLANTUML 
+
+@startuml
+class CRC_c << C, #FF7700 >> {
+  -int CRCbits
+  -int CRCpad
+  -int Polynom
+  -int Init
+  -int XOrOut 
+  -bool RefIn
+  -bool RefOut
+  -int Polymask 
+  -int Polytable[256]
+--
+  +CRC_c CreateCRC()
+  +CRC_c CreateCRCFromName()
+  +CRC_c __init__()
+..
+  +int CRC()
+..
+  +str CRCCreatePythonCode()
+..
+  -int CRCReflect()
+}
+hide empty members
+@enduml
+
+'''
+
 class CRC_c:
         ReflectTable = [
                 0x00, 0x80, 0x40, 0xc0, 0x20, 0xa0, 0x60, 0xe0, 0x10, 0x90, 0x50, 0xd0, 0x30, 0xb0, 0x70, 0xf0,
@@ -166,38 +195,17 @@ class CRC_c:
 
                 reflection >>= bitspad
                 return reflection
-        
-        def __init__(self, CRCbits, Polynom, Init, RefIn, RefOut, XOrOut):
+        def __init__(self, CRCbits, Polynom, Polymask, Init, RefIn, RefOut, XOrOut, CRCpad, Polytable):
                 self.CRCbits = CRCbits
-                Polymask = ((1 << self.CRCbits) - 1)
-                Polymsb = 1 << (self.CRCbits - 1)
                 self.Polymask = Polymask
                 self.Polynom = Polynom
-                self.Init = Init & Polymask
+                self.Init = Init 
                 self.RefIn = RefIn
                 self.RefOut = RefOut
-                self.XOrOut = XOrOut & Polymask
-                self.CRCpad = (8 - (self.CRCbits & 7)) & 7 # non byte aligned CRC;
-                
-                if not self.RefIn:
-                        Polynom <<= self.CRCpad
-                        Polymsb <<= self.CRCpad
-                        Polymask <<= self.CRCpad
-                # initialze table     
-                CRC = Polymsb
-                self.Polytable = [0] * 256
+                self.XOrOut = XOrOut 
+                self.CRCpad = CRCpad
+                self.Polytable = Polytable
 
-                for i in (1, 2, 4, 8, 16, 32, 64, 128):
-                        if CRC & Polymsb:
-                                CRC = (CRC << 1) ^ Polynom
-                        else:
-                                CRC <<= 1
-                        CRC &= Polymask                     
-                        for j in range(i):
-                                self.Polytable[self.CRCReflect(i + j, 8, 0) if self.RefIn else i + j] = CRC ^ self.Polytable[self.CRCReflect(j, 8, 0) if self.RefIn else j]
-                if self.RefIn:
-                        for i in range(1, 256):
-                                self.Polytable[i] = self.CRCReflect(self.Polytable[i], self.CRCbits, self.CRCpad)
         def CRC(self, Buffer):
                 crc = self.Init
                 length = len(Buffer)
@@ -219,11 +227,53 @@ class CRC_c:
 
         @classmethod
         def CRCCreate(self, CRCbits, Polynom, Init, RefIn, RefOut, XOrOut):
-                return self(CRCbits, Polynom, Init, RefIn, RefOut, XOrOut)
+                Polymask = ((1 << CRCbits) - 1)
+                Polymsb = 1 << (CRCbits - 1)
+                CRCpad = (8 - (CRCbits & 7)) & 7 # non byte aligned CRC;
+                
+                Polynom_ = Polynom 
+                Polymask_ = Polymask
+                if not RefIn:
+                        Polynom <<= CRCpad
+                        Polymsb <<= CRCpad
+                        Polymask <<= CRCpad
+                # initialze table     
+                CRC = Polymsb
+                Polytable = [0] * 256
+
+                for i in (1, 2, 4, 8, 16, 32, 64, 128):
+                        if CRC & Polymsb:
+                                CRC = (CRC << 1) ^ Polynom
+                        else:
+                                CRC <<= 1
+                        CRC &= Polymask                     
+                        for j in range(i):
+                                Polytable[self.CRCReflect(self, i + j, 8, 0) if RefIn else i + j] = CRC ^ Polytable[self.CRCReflect(self, j, 8, 0) if RefIn else j]
+                if RefIn:
+                        for i in range(1, 256):
+                                Polytable[i] = self.CRCReflect(self, Polytable[i], CRCbits, CRCpad)
+
+                return self(CRCbits, Polynom_, Polymask_, Init, RefIn, RefOut, XOrOut, CRCpad, Polytable)
 
         @classmethod
         def CRCCreateFromName(self, CRCName):
                 CRCdef = [item for item in self.CRCs if item[0] == CRCName]
                 CRCdef = CRCdef[0]
-                return self(CRCdef[1], CRCdef[2], CRCdef[3], CRCdef[4], CRCdef[5], CRCdef[6])
+                return self.CRCCreate(CRCdef[1], CRCdef[2], CRCdef[3], CRCdef[4], CRCdef[5], CRCdef[6])
                 
+        CRC_CREATECODE_LINELENGTH = 120
+        def CRCcreatePythonCode(self):
+                ValuesDigits = (self.CRCbits + (3 if (self.RefIn) else self.CRCpad)) >> 2
+                ValuesRow = self.CRC_CREATECODE_LINELENGTH / (ValuesDigits + 4)
+
+                code = 'CRC_{p1:0{width}x} = CRC_c('.format(p1=self.Polynom, width=ValuesDigits) 
+                code += '{}, 0x{:0{width}x}, 0x{:0{width}x}, '.format(self.CRCbits, self.Polynom, self.Polymask, width=ValuesDigits)
+                code += '0x{:0{width}x}, {}, {}, '.format(self.Init, self.RefIn, self.RefOut, width=ValuesDigits)
+                code += '0x{:0{width}x}, {}, [\n'.format(self.XOrOut, self.CRCpad, width=ValuesDigits)
+                for i in range(0, 256):
+                        Sep1 = "\t" if (i % ValuesRow  == 0) else " "
+                        Sep2 = "," if (i != 255) else ""
+                        Sep3 = "\n" if (i % ValuesRow  == ValuesRow - 1 or i == 255) else ""
+                        code += '{}0x{:0{width}x}{}{}'.format(Sep1, self.Polytable[i], Sep2, Sep3, width=ValuesDigits)
+                code += "\t])"
+                return code
