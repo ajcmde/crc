@@ -224,7 +224,7 @@ C, Python
   https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/index.html 
 
 # dependency Python
-  Python version >= 3
+  Python version ≥ 3
 
 # reference
   http://graphics.stanford.edu/~seander/bithacks.html#BitReverseTable
