@@ -49,6 +49,7 @@ typedef struct {
     uint8_t CRCpad; //  padding bits to next byte boundary [0-7]
     CRC_t Polynom; // CRC polynom
     CRC_t Init; // CRC initial value
+    
     CRC_t XOrOut; // apply xor mask to CRC
     bool RefIn; // reflected input
     bool RefOut; // reflect CRC (before Xor)
@@ -96,7 +97,7 @@ extern CRChandle_t *CRCCreateFromName(char *CRCName);
  * 
  * @result CRC. Will return 0 if CRChandle is NULL 
  */
-extern CRC_t CRC(CRChandle_t *CRChandle, uint8_t *Buffer, size_t Length);
+extern CRC_t CRC(const CRChandle_t *CRChandle, const uint8_t *Buffer, size_t Length);
 
 #ifndef CRC_CREATECODE_LINELENGTH
 // max line length of the polytable C code
@@ -110,4 +111,4 @@ extern CRC_t CRC(CRChandle_t *CRChandle, uint8_t *Buffer, size_t Length);
  * 
  * @result Pointer to string with generated source code. Function will fail if CRChandle is NULL or if memory allocation failed. 
  */
-extern char *CRCCreateCCode(CRChandle_t *CRChandle);
+extern char *CRCCreateCCode(const CRChandle_t *CRChandle);
