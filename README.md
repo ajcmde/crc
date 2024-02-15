@@ -5,6 +5,11 @@
 # description
 provides functions to calculate a crc (1-64bit)
 
+# motivation
+The initial motivation behind creating a CRC library was to have a universal function (written in the C programming language) that is both fast and capable of calculating any CRC for microcontrollers. 
+However the calculation of the lookup table for fast CRC computation can be expensive in terms of time and memory usage. (e.g., 8bit lookup values are stored in 64bit unsigend integers 
+unless you didn't reconfigure the code). The next logical step is to precalculate the lookup table and incorporate it then (manually) into the code. To solve the memory issue as well, the CRC function is co-generated during the creation of the lookup table. It’s not mind-blowing, but it’s a journey.   
+
 # note
 Description for python implementation needs to be added
 
@@ -28,18 +33,23 @@ C, Python
   > Function will fail, if number of crcbits are not supported or system does not provided enough memory to hold the CRChandle_t
   
   1. b. initialize CRC by specifing a name (see source code for valid names ;-) ):  
-  `CRChandle_t *CRCCreateFromName(char *CRCname)`   
+  `CRChandle_t *CRCCreateFromName(const char *CRCname)`   
     `CRCname`: name of CRC    
   > Function will fail, if number of crcbits are not supported, name is not known or system does not provided enough memory to hold the CRChandle_t
 
   2. Calculate CRC:  
-  `CRC_t CRC(CRChandle_t *CRChandle, uint8_t *Buffer, size_t Length)`  
+  `CRC_t CRC(const CRChandle_t *CRChandle, const uint8_t *Buffer, size_t Length)`  
     `CRChandle`: handle of CRC  
     `Buffer`: data  
     `Length`: length of data
   
-  3. Dump CRC as C code to initialize a static CRC handle while compiling:  
+  3. a. Dump CRC lookup table as C code to initialize a static CRC handle while compiling:  
     `char *CRCCreateCCode(CRChandle_t *CRChandle)`  
+    `CRChandle`: handle of CRC  
+  > Function will allocate memory for the generated source code.
+
+  3. a. Dump CRC functioan code including the lookup table as C code:  
+    `char *CRCCreateCCode2(const CRChandle_t *CRChandle)`  
     `CRChandle`: handle of CRC  
   > Function will allocate memory for the generated source code.
 
