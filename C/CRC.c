@@ -25,6 +25,36 @@
  * For more information, please refer to <https://unlicense.org>
  */
 
+/* PLANTUML 
+@startuml
+class CRC_t << T, #FF7700 >>
+CRC_t <|-- CRChandle_t
+class CRChandle_t << T, #FF7700 >> {
+  -CRC_t CRCbits
+  -int8_t CRCpad
+  -CRC_t Polynom
+  -CRC_t Init
+  -CRC_t XOrOut 
+  -bool RefIn
+  -bool RefOut
+  -CRC_t Polymask 
+  -CRC_t Polytable[256]
+--
+  +CRChandle_t CreateCRC()
+  +CRChandle_t CreateCRCFromName()
+..
+  +CRC_t CRC()
+..
+  +void CRCDestroy()
+..
+  +char *CRCCreateCCode()
+..
+  -CRC_t CRCReflect()
+}
+hide empty members
+@enduml
+*/
+
 #include "CRC.h"
 #include "string.h"
 
@@ -39,7 +69,7 @@
  */
 static CRC_t CRCReflect(CRC_t number, uint8_t bits, uint8_t bitspad)
 {
-    static uint8_t ReflectTable[] = {
+    static const uint8_t ReflectTable[] = {
         0x00, 0x80, 0x40, 0xc0, 0x20, 0xa0, 0x60, 0xe0, 0x10, 0x90, 0x50, 0xd0, 0x30, 0xb0, 0x70, 0xf0,
         0x08, 0x88, 0x48, 0xc8, 0x28, 0xa8, 0x68, 0xe8, 0x18, 0x98, 0x58, 0xd8, 0x38, 0xb8, 0x78, 0xf8,
         0x04, 0x84, 0x44, 0xc4, 0x24, 0xa4, 0x64, 0xe4, 0x14, 0x94, 0x54, 0xd4, 0x34, 0xb4, 0x74, 0xf4,
@@ -65,11 +95,10 @@ static CRC_t CRCReflect(CRC_t number, uint8_t bits, uint8_t bitspad)
         result = (result << 8) | ReflectTable[number & 0xff];
         number >>= 8;
     }
-
     result >>= bitspad; // align to CRC bits
     return(result);
-}
 
+}
 
 void CRCDestroy(CRChandle_t *CRChandle)
 {
@@ -286,7 +315,7 @@ CRChandle_t *CRCCreateFromName(char *CRCName)
 
 
 __attribute__((no_sanitize("shift")))
-CRC_t CRC(CRChandle_t *CRChandle, uint8_t *Buffer, size_t Length)
+CRC_t CRC(const CRChandle_t *CRChandle, const uint8_t *Buffer, size_t Length)
 {
     CRC_t CRC;
     size_t i;
@@ -317,6 +346,8 @@ CRC_t CRC(CRChandle_t *CRChandle, uint8_t *Buffer, size_t Length)
 
     return(CRC);
 }
+
+
 
 
 extern int	vsnprintf (char *__restrict, size_t, const char *__restrict, __VALIST)
@@ -368,7 +399,7 @@ static int CRCvnfrintf(char **buffer, size_t *n, const char *fmt, ...)
 }
 
 
-char *CRCCreateCCode(CRChandle_t *CRChandle)
+char *CRCCreateCCode(const CRChandle_t *CRChandle)
 {
     size_t Length;
     char *_Buffer, *Buffer;
@@ -385,6 +416,9 @@ char *CRCCreateCCode(CRChandle_t *CRChandle)
     
     for(int Pass = 0; Pass < 2; Pass++) {
         CRCvnfrintf(&Buffer, &Length, "CRChandle_t CRChandle_%llx = {\n", (uint64_t)CRChandle->Polynom);
+
+
+
         CRCvnfrintf(&Buffer, &Length, "  .CRCbits = %u,\n", CRChandle->CRCbits);
         CRCvnfrintf(&Buffer, &Length, "  .CRCpad = %u,\n", CRChandle->CRCpad);
         CRCvnfrintf(&Buffer, &Length, "  .Polynom = 0x%llx,\n", (uint64_t)CRChandle->Polynom);
