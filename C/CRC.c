@@ -178,7 +178,7 @@ typedef struct
     CRC_t XOrOut; // apply xor mask to CRC
 } CRCdefinition_t;
 
-CRChandle_t *CRCCreateFromName(char *CRCName)
+CRChandle_t *CRCCreateFromName(const char *CRCName)
 {
     // reference: https://reveng.sourceforge.io/crc-catalogue/all.htm
     const CRCdefinition_t CRCs[] =
