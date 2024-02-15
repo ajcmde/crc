@@ -86,7 +86,7 @@ extern CRChandle_t *CRCCreate(uint8_t CRCbits, CRC_t Polynom, CRC_t Init, bool R
  * 
  * @result Pointer to CRChandle_t. If CRCname points to NULL, CRC is unknown or, memory allocation fails a NULL pointer will be returned 
  */
-extern CRChandle_t *CRCCreateFromName(char *CRCName);
+extern CRChandle_t *CRCCreateFromName(const char *CRCName);
 
 /**
  * @brief Calculate CRC code of a block of bytes
