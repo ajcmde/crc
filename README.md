@@ -57,7 +57,7 @@ C, Python
     `void CRCDestroy(CRChandle_t *CRChandle)`  
     `CRChandle`: handle of CRC
 
-![image](https://github.com/ajcmde/crc/assets/134808561/02d56d6d-31ff-41e2-a588-7d227bde80eb)
+![image](https://github.com/ajcmde/crc/assets/134808561/d974c51e-5488-46e3-a9af-653eaf29af71)
 
 # usage Python
   CRC are initialized by calling the class methods `CRCCreate` or `CRCCreateFromName`. When using the first option, provide the neccessary  
