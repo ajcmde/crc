@@ -112,3 +112,12 @@ extern CRC_t CRC(const CRChandle_t *CRChandle, const uint8_t *Buffer, size_t Len
  * @result Pointer to string with generated source code. Function will fail if CRChandle is NULL or if memory allocation failed. 
  */
 extern char *CRCCreateCCode(const CRChandle_t *CRChandle);
+
+/**
+ * @brief Create C source code for the specified CRC. 
+ *
+ * @param CRChandle handle to CRC table
+ * 
+ * @result Pointer to string with generated source code. Function will fail if CRChandle is NULL or if memory allocation failed. 
+ */
+extern char *CRCCreateCCode2(const CRChandle_t *CRChandle);
