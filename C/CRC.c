@@ -48,6 +48,7 @@ class CRChandle_t << T, #FF7700 >> {
   +void CRCDestroy()
 ..
   +char *CRCCreateCCode()
+  +char *CRCCreateCCode2()
 ..
   -CRC_t CRCReflect()
 }
