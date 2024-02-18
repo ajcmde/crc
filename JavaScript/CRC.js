@@ -73,9 +73,9 @@ class CRC_c {
     ];
 
     #CRCReflect(number, bits, bitspad) {
+//alert(bitspad);
         let result = BigInt(0);
-        const bytes = (bits + bitspad) >> 3;
-
+        let bytes = (bits + bitspad) >> 3;
         for (let i = 0; i < bytes; i++) {
             result = (result << BigInt(8)) | BigInt(this.ReflectTable[number & BigInt(0xff)]);
             number >>= BigInt(8);
@@ -119,6 +119,7 @@ class CRC_c {
 
         // Initialize table
         CRC = Polymsb;
+        this.Polytable = null;
         this.Polytable = [BigInt(0)]; // Reminder of 0 is 0
 
         for (i = 1; i < 256; i <<= 1) {
@@ -128,16 +129,15 @@ class CRC_c {
                 CRC <<= BigInt(1);
             }
             CRC &= Polymask;
-
             for (j = 0; j < i; j++) {
                 this.Polytable[this.RefIn ? this.ReflectTable[i + j] : (i + j)] =
                     CRC ^ this.Polytable[this.RefIn ? this.ReflectTable[j] : j];
             }
         }
-
+ 
         if (this.RefIn) {
             for (i = 1; i < 256; i++) {
-                this.Polytable[i] = CRCReflect(this.Polytable[i], CRCbits, this.CRCpad);
+                this.Polytable[i] = this.#CRCReflect(this.Polytable[i], CRCbits, this.CRCpad);
             }
         }
     }
@@ -157,7 +157,7 @@ class CRC_c {
         Buffer += "#include <stdint.h>\n\n";
         if (this.RefOut !== this.RefIn) {
             // CODE: supporting data for reflecting
-            ValuesRow = CRC_CREATECODE_LINELENGTH / (ValuesDigits + 2); 
+            ValuesRow = CRC_CREATECODE_LINELENGTH / (2 + 4); 
             Buffer += "static const uint8_t ReflectTable[] = {\n";
             for (let i = 0; i < 256; i++) {
                 let Sep1 = (i % ValuesRow === 0) ? "  " : "";
@@ -176,7 +176,7 @@ class CRC_c {
         Buffer += `Init: 0x${this.Init.toString(16).padStart(ValuesDigits, '0')}, `;
         Buffer += `RefIn: ${this.RefIn}, RefOut: ${this.RefOut}, `;
         Buffer += `XOrOut: 0x${this.XOrOut.toString(16).padStart(ValuesDigits, '0')}\n`;
-        Buffer += `  uint${this}_t CRC = 0x${this.Init.toString(16).padStart(ValuesDigits, '0')};\n`;
+        Buffer += `  uint${CRCbits2}_t CRC = 0x${this.Init.toString(16).padStart(ValuesDigits, '0')};\n`;
 
         if (this.RefOut !== this.RefIn && this.CRCbits > 8) {
             // CODE: reflected CRC
@@ -233,7 +233,9 @@ class CRC_c {
             if(this.CRCbits <= 8) {
                 // CODE: reflect <=8bit
                 Buffer += "  CRC = ReflectTable[CRC];\n";
-                Buffer += `  CRC >>= ${this.CRCpad.toString(10)}\n`;
+                if(this.CRCpad) {
+                    Buffer += `  CRC >>= ${this.CRCpad.toString(10)}\n`;
+                }
             }
             else {
                 // CODE: reflect >8bit
@@ -241,7 +243,12 @@ class CRC_c {
                 Buffer += "    CRCref = (CRCref << 8) | ReflectTable[CRC & 0xff];\n";
                 Buffer += "    CRC >>= 8;\n";
                 Buffer += "  }\n";
-                Buffer += `  CRC = CRCref >> ${this.CRCpad.toString(10)};\n`;
+                if(this.CRCpad) {
+                    Buffer += `  CRC = CRCref >> ${this.CRCpad.toString(10)};\n`;
+                }
+                else {
+                    Buffer += `  CRC = CRCref;\n`;
+                }
             }
         }
         if(this.XOrOut) {
