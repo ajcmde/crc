@@ -553,7 +553,9 @@ char *CRCCreateCCode2(const CRChandle_t *CRChandle)
             if(CRChandle->CRCbits <= 8) {
                 // CODE: reflect <=8bit
                 CRCvnfrintf(&Buffer, &Length, "  CRC = ReflectTable[CRC];\n");
-                CRCvnfrintf(&Buffer, &Length, "  CRC >>= %d\n", CRChandle->CRCpad);
+                if(CRChandle->CRCpad) {
+                    CRCvnfrintf(&Buffer, &Length, "  CRC >>= %d\n", CRChandle->CRCpad);
+                }
             }
             else {
                 // CODE: reflect >8bit
@@ -561,7 +563,13 @@ char *CRCCreateCCode2(const CRChandle_t *CRChandle)
                 CRCvnfrintf(&Buffer, &Length, "    CRCref = (CRCref << 8) | ReflectTable[CRC & 0xff];\n");
                 CRCvnfrintf(&Buffer, &Length, "    CRC >>= 8;\n");
                 CRCvnfrintf(&Buffer, &Length, "  }\n");
-                CRCvnfrintf(&Buffer, &Length, "  CRC = CRCref >> %d;\n", CRChandle->CRCpad);
+                if(CRChandle->CRCpad) {
+                    CRCvnfrintf(&Buffer, &Length, "  CRC = CRCref >> %d;\n", CRChandle->CRCpad);
+                }
+                else
+                {
+                    CRCvnfrintf(&Buffer, &Length, "  CRC = CRCref;\n");
+                }
             }
         }
         if(CRChandle->XOrOut) {
@@ -579,3 +587,4 @@ char *CRCCreateCCode2(const CRChandle_t *CRChandle)
     }
     return(_Buffer);
 }
+
