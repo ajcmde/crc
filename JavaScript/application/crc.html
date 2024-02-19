@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+
+<!-- 
+ * This is free and unencumbered software released into the public domain.
+ *
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ *
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * 
+ * For more information, please refer to <https://unlicense.org>
+ -->
+
+<style>
+table, th, td {
+    border: none
+  }
+table tr td:nth-child(1) {
+  text-align: right;
+}
+</style>
+
+<html>
+
+<script type="application/javascript" src="../crc.js"></script>
+<script type="application/javascript" src="../code2DOM.js"></script>
+
+<script>
+    function action_createccode()
+    {
+        let crcbits = document.forms["ccc"]["crcbits"].value;
+        let polynom = document.forms["ccc"]["polynom"].value;
+        let init = document.forms["ccc"]["init"].value;
+        let refin = document.forms["ccc"]["refin"].checked;
+        let  refout = document.forms["ccc"]["refout"].checked;
+        let xorout = document.forms["ccc"]["xorout"].value;
+  
+        let  node_code = document.getElementById("_code");
+        while (node_code.firstChild) { node_code.removeChild(node_code.firstChild); }
+
+        let  code = (new CRC_c(crcbits, polynom, init, refin, refout, xorout)).CRCCreateCCode2();    
+        code2DOM(node_code, code);
+    }
+</script>
+
+<body>
+
+    <h2>CRC - C code</h2>
+    <code>
+    <form name="ccc">
+    <table>
+        <tr><td>CRC bits:</td><td><input value="16" type="text" name="crcbits"></td></tr>
+        <tr><td>Polynom:</td><td><input value="0x1021" type="text" name="polynom"></td></tr>
+        <tr><td>Init:</td><td><input value="0xffff" type="text" name="init"></td></tr>
+        <tr><td>RefIn:</td><td><input checked type="checkbox" name="refin"></td></tr>
+        <tr><td>RefOut:</td><td><input checked type="checkbox" name="refout"></td></tr>
+        <tr><td>XOrOut:</td><td><input value="0xffff" type="text" name="xorout"></td></tr>
+        <tr><td></td><td><input id="clickMe" type="button" value="Create C Code" onclick="action_createccode();" /></td></tr>
+    </table> 
+    </form>
+    </code>
+
+    <br><br>
+    <code id="_code" />
+
+</body>
+
+</html>
+
