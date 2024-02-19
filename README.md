@@ -1,6 +1,6 @@
 # CRC
 # tags 
-#ESP32, #CRC, #CRC-8, #CRC-16, #CRC-32, #CRC-64, #SML, #CRC-12, #CRC-7, #C, #PYTHON
+#ESP32, #CRC, #CRC-8, #CRC-16, #CRC-32, #CRC-64, #SML, #CRC-12, #CRC-7, #C, #PYTHON, #JAVASCRIPT
 
 # description
 provides functions to calculate a crc (1-64bit)
