@@ -73,7 +73,6 @@ class CRC_c {
     ];
 
     #CRCReflect(number, bits, bitspad) {
-//alert(bitspad);
         let result = BigInt(0);
         let bytes = (bits + bitspad) >> 3;
         for (let i = 0; i < bytes; i++) {
@@ -92,7 +91,11 @@ class CRC_c {
         let Polymsb, Polymask;
         let i, j;
 
-        if (CRCbits === 0 || CRCbits > 64) {
+        CRCbits = Number(CRCbits);
+        RefIn = Boolean(RefIn);
+        RefOut = Boolean(RefOut);        
+
+        if (CRCbits <= 0 || CRCbits > 64) {
             return null;
         }
 
@@ -262,5 +265,4 @@ class CRC_c {
 
         return(Buffer);
     }
-
 }
