@@ -236,6 +236,9 @@ C, Python
 # dependency Python
   Python version ≥ 3
 
+# dependency HTML
+  Python version ≥ 5
+
 # reference
   http://graphics.stanford.edu/~seander/bithacks.html#BitReverseTable
   
