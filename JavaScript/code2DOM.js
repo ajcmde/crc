@@ -29,19 +29,14 @@ function code2DOM(node, code)
 {
     codelines = code.split("\n");
     codelines.forEach(element => {
-        for(i = 0; i < element.length; i++)
-            if(element[i] != ' ') {
-                break;
-            }
         if(element != "") {
             node_text = document.createElement("div");
             node_text.append(document.createTextNode(element));
-            node_text.style.textIndent = `${i}em`;
+            node_text.style.whiteSpace = "pre"
             node.append(node_text);    
         }
         else {
             node.append(document.createElement("br"));
         }
-        // node.append(document.createElement("br"));
     });
-} 
+}
