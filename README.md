@@ -11,7 +11,7 @@ However the calculation of the lookup table for fast CRC computation can be expe
 unless you didn't reconfigure the code). The next logical step is to precalculate the lookup table and incorporate it then (manually) into the code. To solve the memory issue as well, the CRC function is co-generated during the creation of the lookup table. It’s not mind-blowing, but it’s a journey.   
 
 # note
-Description for python implementation needs to be added
+javascript calculates lookup table only and create C codes.
 
 # language
 C, Python
@@ -230,6 +230,19 @@ C, Python
         ])
     print('CRC_42f0e1eba9ea3693.CRC(Hello World!): 0x{:x}'.format(CRC_42f0e1eba9ea3693.CRC(b"Hello World!")))
 
+# example 5 (Python)
+    # create CRC table for smart message protocol (SML) once: 
+    #    16bits 
+    #    polynom is x^{16} + x^{12} + x^5 + 1
+    #    initial value: 0xffff
+    #    reverse input and output
+    #    toggle all output bits
+    CRChandle = CRC_c.CRCCreate(16, 0x1021, 0xffff, True, True, 0xffff)
+
+    ...
+    
+    crc = CRChandle.CRC(b"12345678")
+
 # dependency C
   https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/index.html 
 
@@ -237,7 +250,7 @@ C, Python
   Python version ≥ 3
 
 # dependency HTML
-  Python version ≥ 5
+  HTML version ≥ 5
 
 # reference
   http://graphics.stanford.edu/~seander/bithacks.html#BitReverseTable
