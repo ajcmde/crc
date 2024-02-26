@@ -148,6 +148,7 @@ C, Python
       }};
 
     ...
+    
     CRC_t crc16;
     
     // calculate CRC
@@ -181,7 +182,6 @@ C, Python
     import CRC
 
     ...
-
 
     CRC_42f0e1eba9ea3693 = CRC_c(64, 0x42f0e1eba9ea3693, 0xffffffffffffffff, 0xffffffffffffffff, True, True, 0xffffffffffffffff, 0, 
         0x0000000000000000, 0xb32e4cbe03a75f6f, 0xf4843657a840a05b, 0x47aa7ae9abe7ff34, 0x7bd0c384ff8f5e33, 0xc8fe8f3afc28015c,
