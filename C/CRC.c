@@ -463,7 +463,7 @@ char *CRCCreateCCode2(const CRChandle_t *CRChandle)
 
     Buffer = NULL;
     Length = 1;
-    ValuesDigits = CRCbits2 >> 2;
+    ValuesDigits = (CRChandle->CRCbits + ((CRChandle->RefIn) ? 3 : CRChandle->CRCpad)) >> 2;
     
     for(int Pass = 0; Pass < 2; Pass++) {
 
@@ -587,4 +587,3 @@ char *CRCCreateCCode2(const CRChandle_t *CRChandle)
     }
     return(_Buffer);
 }
-
