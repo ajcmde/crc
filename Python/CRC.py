@@ -47,6 +47,7 @@ class CRC_c << C, #FF7700 >> {
   +int CRC()
 ..
   +str CRCCreatePythonCode()
+  +str CRCCreateCCode2()
 ..
   -int CRCReflect()
 }
@@ -277,3 +278,103 @@ class CRC_c:
                         code += '{}0x{:0{width}x}{}{}'.format(Sep1, self.Polytable[i], Sep2, Sep3, width=ValuesDigits)
                 code += "\t])"
                 return code
+        
+        def CRCcreateCCode2(self):
+                CRCbits_8 = (self.CRCbits - 1) & ((-1) ^ 7) # CRC bits aligned to next byte border (12 -> 8, 32 -> 24)
+                CRCbits2 = 8 if (self.CRCbits <= 8) else 16 if (self.CRCbits <= 16) else 32 if (self.CRCbits <= 32) else 64 if (self.CRCbits <= 64) else  -1
+                ValuesDigits = (self.CRCbits + 3 if (self.RefIn) else self.CRCpad) >> 2
+
+                # CODE: header
+                code = 'extern uint{}_t CRC(const uint8_t *Buffer, size_t Length);\n\n'.format(CRCbits2)
+                # CODE: include
+                code += "#include <stdint.h>\n\n"
+                if self.RefOut ^ self.RefIn:
+                        # CODE: supporting data for reflecting
+                        ValuesRow = self.CRC_CREATECODE_LINELENGTH // (2 + 4)
+                        code += "static const uint8_t ReflectTable[] = {\n"
+                        for i in range(0, 256): 
+                                Sep1 = "\t" if (i % ValuesRow == 0) else " "
+                                Sep2 = "," if (i != 255) else ""
+                                Sep3 = "\n" if (i % ValuesRow == ValuesRow - 1 or i == 255) else ""
+                                code += '{} 0x{:02x}{}{}'.format(Sep1, self.ReflectTable[i], Sep2, Sep3)
+                        code += "  };\n\n"
+                # CODE: function header
+                code += "__attribute__((no_sanitize(\"shift\")))\n"
+                code += 'uint{}_t CRC(const uint8_t *Buffer, size_t Length)\n'.format(CRCbits2)
+                code += "{\n"
+                # CODE: description and variables
+                code += '  // CRCbits: {}, '.format(self.CRCbits)
+                code += 'Polynom: 0x{:0{width}x}, '.format(self.Polynom, width=ValuesDigits)
+                code += 'Init: 0x{:0{width}x}, '.format(self.Init, width=ValuesDigits)
+                code += 'RefIn: {}, '.format("true" if (self.RefIn) else "false")
+                code += 'RefOut: {}, '.format("true" if (self.RefOut) else "false")
+                code += 'XOrOut: 0x{:0{width}x}\n'.format(self.XOrOut, width=ValuesDigits)
+                
+                code += '  uint{}_t CRC = 0x{:0{width}x};\n'.format(CRCbits2, self.Init, width=ValuesDigits) 
+                if (self.RefOut ^ self.RefIn) and (self.CRCbits > 8):
+                        # CODE: reflected CRC
+                        code += '  uint{}_t CRCref = 0;\n'.format(CRCbits2)
+                code += "  size_t i;\n"
+                # CODE: polytable
+                ValuesRow = self.CRC_CREATECODE_LINELENGTH // (ValuesDigits + 4)
+                code += '  const uint{}_t Polytable[] = {{\n'.format(CRCbits2)
+                for i in range(0, 256):
+                        Sep1 = "\t" if ((i % ValuesRow) == 0) else " "
+                        Sep2 = "," if (i != 255) else ""
+                        Sep3 = "\n" if ((i % ValuesRow) == (ValuesRow - 1) or i == 255) else ""
+                        code += '{} 0x{:0{width}x}{}{}'.format(Sep1, self.Polytable[i], Sep2, Sep3, width=ValuesDigits)
+                code += "  };\n"
+
+                # CODE: loop
+                code += "  for(i = 0; i < Length; i++) {\n"
+                if self.RefIn:
+                        if self.CRCbits <= 8:
+                                # CODE: <=8bit, Refin 
+                                code += "    CRC = Polytable[Buffer[i] ^ CRC];\n"
+                        else:
+                                # CODE: >8bit, Refin  
+                                code += "    CRC = Polytable[(Buffer[i] ^ CRC) & 0xff] ^ (CRC >> 8);\n"
+                else:
+                        if self.CRCbits <= 8:
+                                # CODE: <=8bit, not Refin
+                                code += "    CRC = Polytable[CRC ^ Buffer[i]];\n"
+                        else:
+                                # CODE: >8bit, not Refin
+                                code += '    CRC = Polytable[((CRC >> {}) & 0xff) ^ Buffer[i]] ^ (CRC << 8);\n'.format(CRCbits_8)
+                # CODE: end of loop
+                code += "  }\n"
+                
+                if not self.RefIn:
+                        if self.CRCpad:
+                                # CODE: not RefIn, CRCpad >0   
+                                code += '  CRC >>= {};\n'.format(self.CRCpad) # non byte aligned CRC
+                        if self.CRCbits > 8 and (self.CRCbits + self.CRCpad) != CRCbits2:
+                                # CODE: not RefIn, CRCbits > 8
+                                code += '  CRC &= 0x{:0{width}x};\n'.format(self.Polymask, width=ValuesDigits)
+
+                if self.RefOut ^ self.RefIn:
+                        # CODE: RefOut ^ Refin 
+                        if self.CRCbits <= 8:
+                                # CODE: reflect <=8bit
+                                code += "  CRC = ReflectTable[CRC];\n"
+                                if self.CRCpad:
+                                        code += '  CRC >>= {}\n'.format(self.CRCpad)
+                        else:
+                                # CODE: reflect >8bit
+                                code += '  for(i = 0; i < {}; i++) {{\n'.format(CRCbits2 >> 3)
+                                code += "    CRCref = (CRCref << 8) | ReflectTable[CRC & 0xff];\n"
+                                code += "    CRC >>= 8;\n"
+                                code += "  }\n"
+                                if self.CRCpad:
+                                        code += '  CRC = CRCref >> {};\n'.format(self.CRCpad)
+                                else:
+                                        code += "  CRC = CRCref;\n"
+                if self.XOrOut:
+                        # CODE: XOrOut !=0 
+                        code += '  CRC ^= 0x{:0{width}x};\n'.format(self.XOrOut, width=ValuesDigits)
+
+                # CODE: end of function
+                code += "  return(CRC);\n"
+                code += "}\n"
+
+                return(code)
