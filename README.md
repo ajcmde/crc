@@ -84,10 +84,9 @@ C, Python
     `Buffer`: data (bytes)
 
   3. Dump CRC_c as Python code to get a "static" CRC_c:  
-    `char *CRCCreateCCode(CRChandle_t *CRChandle)`  
-    `CRChandle`: handle of CRC  
-
-![image](https://github.com/ajcmde/crc/assets/134808561/aef47709-70ec-4929-a2cb-36e250530788)
+    `CRCCreatePythonCode()`  
+     
+![image](https://github.com/ajcmde/crc/assets/134808561/496a0556-4e26-4e0d-b75f-0f4188540a40)
   
 # example 1 (C)
     #include "CRC.h"
