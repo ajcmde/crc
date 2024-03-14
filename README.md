@@ -87,6 +87,13 @@ C, Python
     `CRCCreatePythonCode()`  
      
 ![image](https://github.com/ajcmde/crc/assets/134808561/496a0556-4e26-4e0d-b75f-0f4188540a40)
+
+# usage JavaScript
+
+Code allows only to initialize the `CRC_c` class and dump C code `CRCCreateCCode2` for CRC calculation. The application folder for an example how to use.
+
+![image](https://github.com/ajcmde/crc/assets/134808561/bae4246f-eaa8-49e7-8c77-858c23831d31)
+
   
 # example 1 (C)
     #include "CRC.h"
