@@ -90,7 +90,7 @@ C, Python
 
 # usage JavaScript
 
-Code allows only to initialize the `CRC_c` class and dump C code `CRCCreateCCode2` for CRC calculation. The application folder for an example how to use.
+Code allows only to initialize the `CRC_c` class and dump C code `CRCCreateCCode2` for CRC calculation. See the  application folder for an example how to use.
 
 ![image](https://github.com/ajcmde/crc/assets/134808561/bae4246f-eaa8-49e7-8c77-858c23831d31)
 
