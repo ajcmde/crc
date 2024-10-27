@@ -8,13 +8,13 @@ provides functions to calculate a crc (1-64bit)
 # motivation
 The initial motivation behind creating a CRC library was to have a universal function (written in the C programming language) that is both fast and capable of calculating any CRC for microcontrollers. 
 However the calculation of the lookup table for fast CRC computation can be expensive in terms of time and memory usage. (e.g., 8bit lookup values are stored in 64bit unsigend integers 
-unless you didn't reconfigure the code). The next logical step is to precalculate the lookup table and incorporate it then (manually) into the code. To solve the memory issue as well, the CRC function is co-generated during the creation of the lookup table. It’s not mind-blowing, but it’s a journey.   
+unless you didn't reconfigure the code). The next logical step is to precalculate the lookup table and incorporate it then (manually) into the code. To solve the memory issue as well, the CRC function is co-generated during the creation of the lookup table.
 
 # note
 javascript calculates lookup table only and create C codes.
 
 # language
-C, Python
+C, Python, JavaScript
 
 # usage C
   To calculate a CRC you need to have an initialized CRC handle (`CRChandle_t`). The handle can be initialized statically (see example 2) or dynamically. How to create the code 
