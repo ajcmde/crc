@@ -27,7 +27,10 @@
 
 #pragma once
 
-#include "freertos/FreeRTOS.h"
+#include <stddef.h>
+#include <string.h>
+#include <stdint.h>
+#include <stdbool.h>
 
 #if defined(CONFIG_CRC_CRC64)
 #define CRC_TYPE uint64_t  
