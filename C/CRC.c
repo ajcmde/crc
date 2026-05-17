@@ -89,8 +89,6 @@ static const uint8_t ReflectTable[] = {
  */
 static CRC_t CRCReflect(CRC_t number, uint8_t bits, uint8_t bitspad)
 {
-
-
     CRC_t result = 0;
     int i;
     uint8_t bytes = (bits + bitspad) / 8;
@@ -100,7 +98,6 @@ static CRC_t CRCReflect(CRC_t number, uint8_t bits, uint8_t bitspad)
     }
     result >>= bitspad; // align to CRC bits
     return(result);
-
 }
 
 void CRCDestroy(CRChandle_t *CRChandle)
